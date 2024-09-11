@@ -6,7 +6,9 @@ defmodule Issues.CLI do
   table of the last _n_ issues in a github project
   """
   def run(argv) do
-    parse_args(argv)
+    argv
+    |> parse_args
+    |> process
   end
 
   # parse arguments and convert them to internal representation for further processing
@@ -37,5 +39,17 @@ defmodule Issues.CLI do
   # bad argument or help
   def args_to_internal_representation(_) do
     :help
+  end
+
+  def process(:help) do
+    IO.puts("""
+    usage: issues<user> <project> [count | #{@default_count}]
+    """)
+
+    System.halt(0)
+  end
+
+  def process({user, project, _count}) do
+    Issues.GithubIssues.fetch(user, project)
   end
 end
